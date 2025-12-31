@@ -1,0 +1,63 @@
+@extends('layouts.master')
+
+@section('title', 'Edit Zone')
+
+@section('content')
+    <div class="d-flex flex-column-fluid">
+        <div class="container-fluid">
+            <div class="card card-custom">
+                <div class="card-header">
+                    <h3 class="card-title">Editing Zone: {{ $zone->name ?? 'N/A' }}</h3>
+                </div>
+                
+                <form method="POST" action="{{ route('admin.zones.update', $zone->id) }}">
+                    @csrf
+                    @method('PUT')
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            
+                            {{-- Zone Name --}}
+                            <div class="col-md-6">
+                                <div class="form-group @error('name') has-error @enderror">
+                                    <label for="name" class="required">
+                                        <i class="far fa-star text-danger fa-sm" title="Required"></i> Name
+                                    </label>
+                                    <input type="text" id="name" class="form-control @error('name') is-invalid @enderror" 
+                                           placeholder="Enter Zone Name" name="name" 
+                                           value="{{ old('name', $zone->name) }}" required>
+                                    @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            {{-- Status --}}
+                            <div class="col-md-6">
+                                <div class="form-group @error('status') has-error @enderror">
+                                    <label for="status" class="required">
+                                        <i class="far fa-star text-danger fa-sm" title="Required"></i> Status
+                                    </label>
+                                    @php $currentStatus = old('status', $zone->status); @endphp
+                                    <select id="status" class="form-control selectpicker @error('status') is-invalid @enderror" 
+                                            name="status" required>
+                                        @foreach($availableStatuses as $statusOption)
+                                            <option value="{{ $statusOption }}" {{ $currentStatus == $statusOption ? 'selected' : '' }}>
+                                                {{ ucfirst($statusOption) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-pill btn-success">Update Zone</button>
+                        <a class="btn btn-pill btn-secondary" href="{{ route('admin.zones.index') }}">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
