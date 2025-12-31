@@ -9,39 +9,38 @@ use Illuminate\Support\Str;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Example: create 5 users
+        $users = [];
         for ($i = 1; $i <= 5; $i++) {
-            DB::table('users')->insert([
+            $users[] = [
                 'name' => 'User ' . $i,
-                'mobile_number' => '0171000000' . $i, // unique mobile numbers
+                'mobile_number' => '0171000000' . $i,
                 'username' => 'user' . $i,
                 'email' => 'user' . $i . '@example.com',
                 'email_verified_at' => now(),
-                'password' => Hash::make('password123'), // hashed password
-                'status' => 'active',
+                'password' => Hash::make('password123'),
+                'status' => 'active', // Use the string 'active'
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ];
         }
 
-        // Optional: add an admin user
-        DB::table('users')->insert([
+        // Add Admin
+        $users[] = [
             'name' => 'Admin',
             'mobile_number' => '01710000000',
             'username' => 'admin',
             'email' => 'admin@example.com',
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
-            'status' => 1,
+            'status' => 'active', // Use the string 'active'
             'remember_token' => Str::random(10),
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ];
+
+        DB::table('users')->insert($users);
     }
 }
