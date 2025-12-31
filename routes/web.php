@@ -32,9 +32,9 @@ use App\Http\Controllers\Admin\OfferController;
 */
 
 // --- Public / Auth Routes ---
-Route::get('/', [WebController::class, 'index'])->name('welcome');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
+// Route::get('/', [WebController::class, 'index'])->name('welcome');
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware('auth')
