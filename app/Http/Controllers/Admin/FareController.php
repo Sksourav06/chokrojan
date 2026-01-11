@@ -83,12 +83,17 @@ class FareController extends Controller
     /**
      * AJAX method to get station pairs for a route.
      */
-    public function getStationPairs($routeId)
+    public function getStationPairs($id)
     {
-        $route = Route::findOrFail($routeId);
-        $stations = $route->stations;
+        $route = Route::with('stations')->find($id);
 
+        if (!$route) {
+            return response()->json(['pairs' => []]); // রুট না পেলে খালি অ্যারে
+        }
+
+        $stations = $route->stations;
         $pairs = [];
+
         foreach ($stations as $origin) {
             foreach ($stations as $destination) {
                 if ($origin->id !== $destination->id) {
@@ -102,7 +107,6 @@ class FareController extends Controller
 
         return response()->json(['pairs' => $pairs]);
     }
-
 
 
     // public function edit(Fare $fare)

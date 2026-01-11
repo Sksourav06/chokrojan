@@ -13,7 +13,9 @@
                 @csrf
                 <div class="card-body">
                     <div class="row">
-                        {{-- === LEFT COLUMN: Main Fare Rule === --}}
+                        {{-- ========================================== --}}
+                        {{-- LEFT COLUMN: Main Fare Rules & Info --}}
+                        {{-- ========================================== --}}
                         <div class="col-md-6">
 
                             {{-- Fare Name --}}
@@ -24,7 +26,7 @@
                                 @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
 
-                            {{-- Route Dropdown (The Trigger) --}}
+                            {{-- Route Dropdown --}}
                             <div class="form-group @error('route_id') has-error @enderror">
                                 <label for="route_id" class="required">Route</label>
                                 <select id="route_id" class="form-control @error('route_id') is-invalid @enderror"
@@ -44,7 +46,6 @@
                                 <div class="col-md-6">
                                     <div class="form-group @error('seat_layout_id') has-error @enderror">
                                         <label for="seat_layout_id" class="required">Seat Plan</label>
-                                        {{-- 'selectpicker' ক্লাস রিমুভ করা হয়েছে --}}
                                         <select id="seat_layout_id"
                                             class="form-control @error('seat_layout_id') is-invalid @enderror"
                                             name="seat_layout_id" required>
@@ -62,7 +63,6 @@
                                 <div class="col-md-6">
                                     <div class="form-group @error('vehicle_type_id') has-error @enderror">
                                         <label for="vehicle_type_id" class="required">Bus Type</label>
-                                        {{-- 'selectpicker' ক্লাস রিমুভ করা হয়েছে --}}
                                         <select id="vehicle_type_id"
                                             class="form-control @error('vehicle_type_id') is-invalid @enderror"
                                             name="vehicle_type_id" required>
@@ -102,7 +102,6 @@
                             {{-- Status --}}
                             <div class="form-group @error('status') has-error @enderror">
                                 <label for="status" class="required">Status</label>
-                                {{-- 'selectpicker' ক্লাস রিমুভ করা হয়েছে --}}
                                 <select id="status" class="form-control @error('status') is-invalid @enderror" name="status"
                                     required>
                                     @foreach($availableStatuses as $status)
@@ -114,109 +113,141 @@
                             </div>
                         </div>
 
-                        {{-- === RIGHT COLUMN: Dynamic Station-to-Station Fares === --}}
+                        {{-- ========================================== --}}
+                        {{-- RIGHT COLUMN: Dynamic Station-to-Station --}}
+                        {{-- ========================================== --}}
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="form-group col-md-10">
                                     <label for="station_to_station">
                                         <i class="far fa-star text-danger fa-sm"></i> Station to Station
-                                        <span id="sts_loading" style="display: none;"><i
-                                                class="fas fa-spinner fa-spin text-info"></i></span>
+                                        <span id="sts_loading" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin text-info"></i>
+                                        </span>
                                     </label>
-
-                                    {{-- 'selectpicker' ক্লাস রিমুভ করা হয়েছে --}}
                                     <select id="station_to_station" class="form-control" disabled>
                                         <option value="">Select Route First...</option>
                                     </select>
                                 </div>
+
                                 <div class="form-group col-md-2">
-                                    <button type="button" class="btn btn-block btn-outline-primary mt-8" id="add-sts-fare"
+                                    {{-- Fixed alignment: Label used for spacing --}}
+                                    <label class="d-block">&nbsp;</label>
+                                    <button type="button" class="btn btn-block btn-outline-primary" id="add-sts-fare"
                                         disabled>
-                                        <i class="fas fa-plus pr-0"></i>
+                                        <i class="fas fa-plus pr-0"></i> Add
                                     </button>
                                 </div>
                             </div>
 
+                            {{-- Error Display for Dynamic Fields --}}
                             <div class="row">
-                                <div class="form-group col-md-12">
+                                <div class="col-md-12">
                                     @error('stsids')<div class="alert alert-danger">{{ $message }}</div>@enderror
-                                    <div id="stsntostsn-div" class="form-group col-md-12 px-3 py-6 mb-0 rounded border"
-                                        style="height:296px; overflow-y:scroll">
-                                        <table class="table table-bordered table-striped">
-                                            <tbody id="sts-fare-table">
+                                    @error('stsfares')<div class="alert alert-danger">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            {{-- Dynamic Table Section --}}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="stsntostsn-div" class="form-group px-0 py-2 mb-0 rounded border"
+                                        style="height:400px; overflow-y:scroll">
+
+                                        <table class="table table-bordered table-striped table-hover" id="main-fare-table">
+                                            <thead class="bg-light sticky-top" style="top:0; z-index:10;">
                                                 <tr>
-                                                    <th class="text-left" width="30%">Station to Station</th>
-                                                    <th class="text-left" width="60%">Fare</th>
+                                                    <th class="text-left" width="60%">Station to Station</th>
+                                                    <th class="text-left" width="30%">Fare</th>
                                                     <th class="text-center" width="10%">Action</th>
                                                 </tr>
-                                                {{-- Rows will be added here by JavaScript --}}
+                                            </thead>
+                                            <tbody id="sts-fare-rows">
+                                                {{-- Rows will be added here via jQuery --}}
                                             </tbody>
                                         </table>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-pill btn-primary">Submit</button>
-                    <a class="btn btn-pill btn-secondary" href="{{ route('admin.fares.index') }}">Cancel</a>
+                    </div> {{-- End Row --}}
+                </div> {{-- End Card Body --}}
+
+                <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-primary px-5">Submit</button>
+                    <a class="btn btn-secondary" href="{{ route('admin.fares.index') }}">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
+@endsection
+@push('scripts')
+    {{-- Script Section --}}
     <script>
         $(document).ready(function () {
 
             // ======================
-            // 1️⃣ Route Selection
+            // 1️⃣ Route Selection Change
             // ======================
             $('#route_id').on('change', function () {
                 const routeId = $(this).val();
                 const stsSelect = $('#station_to_station');
                 const stsLoading = $('#sts_loading');
                 const stsAddBtn = $('#add-sts-fare');
-                const fareTable = $('#sts-fare-table');
+                const fareTableBody = $('#sts-fare-rows');
 
-                // Reset before load
-                fareTable.find("tr:gt(0)").remove();
+                // Reset UI
+                fareTableBody.empty();
                 stsSelect.empty().append('<option value="">Loading...</option>').prop('disabled', true);
                 stsAddBtn.prop('disabled', true);
 
                 if (!routeId) {
-                    stsSelect.empty().append('<option value="">Select Route First...</option>').prop('disabled', true);
+                    stsSelect.empty().append('<option value="">Select Route First...</option>');
                     return;
                 }
 
                 stsLoading.show();
 
-                // ✅ correct Laravel route name
-                let url = "{{ route('admin.fares.getStationPairs', ['route' => ':id']) }}";
-                url = url.replace(':id', routeId);
+                // ✅ URL Generation Fixed
+                // আমরা সরাসরি ব্লেড থেকে রাউট জেনারেট করছি এবং ':id' কে রিপ্লেস করছি
+                let baseUrl = "{{ route('admin.fares.getStationPairs', ':id') }}";
+                let finalUrl = baseUrl.replace(':id', routeId);
+
+                console.log("Requesting URL:", finalUrl); // কনসোল চেক করুন
 
                 $.ajax({
-                    url: url,
+                    url: finalUrl,
                     type: 'GET',
                     dataType: 'json',
                     success: function (data) {
-                        console.log("✅ AJAX Response:", data);
+                        console.log("Data Received:", data);
 
                         const pairs = data.pairs ?? [];
-
                         stsSelect.empty().append('<option value="">Select Station to Station...</option>');
-                        $.each(pairs, function (index, pair) {
-                            stsSelect.append(`<option value="${pair.value}">${pair.text}</option>`);
-                        });
 
-                        stsSelect.prop('disabled', false);
-                        stsAddBtn.prop('disabled', false);
+                        if (pairs.length > 0) {
+                            $.each(pairs, function (index, pair) {
+                                stsSelect.append(`<option value="${pair.value}">${pair.text}</option>`);
+                            });
+                            // ✅ ডাটা পেলে এনাবল হবে
+                            stsSelect.prop('disabled', false);
+                            stsAddBtn.prop('disabled', false);
+                        } else {
+                            // ⚠️ ডাটা না পেলেও ড্রপডাউন এনাবল হবে যাতে ইউজার মেসেজ দেখে
+                            stsSelect.append('<option value="">No Stations Found</option>');
+                            stsSelect.prop('disabled', true);
+                        }
+
                         stsLoading.hide();
                     },
                     error: function (xhr) {
-                        console.error('❌ AJAX Error:', xhr.status, xhr.responseText);
-                        alert('Failed to load station pairs.');
-                        stsSelect.empty().append('<option value="">Error loading pairs</option>').prop('disabled', true);
+                        // ❌ যদি সার্ভার এরর দেয় (404/500)
+                        console.error('AJAX Error:', xhr);
+                        alert('Error: ' + xhr.status + ' ' + xhr.statusText + '\nCheck Console for details.');
+
+                        stsSelect.empty().append('<option value="">Server Error</option>');
                         stsLoading.hide();
                     }
                 });
@@ -229,53 +260,45 @@
                 const selectedPair = $('#station_to_station').val();
                 const selectedText = $('#station_to_station option:selected').text();
 
-                if (!selectedPair) {
-                    alert('Please select a Station → Station pair first.');
-                    return;
-                }
+                if (!selectedPair) return;
 
-                // prevent duplicate row
-                if ($('#stsdiv_' + selectedPair.replace('-', '_')).length > 0) {
-                    alert(selectedText + ' already added.');
+                const rowId = 'stsdiv_' + selectedPair.replace(/-/g, '_');
+
+                if ($('#' + rowId).length > 0) {
+                    alert('Already added!');
                     return;
                 }
 
                 const newRow = `
-                <tr id="stsdiv_${selectedPair.replace('-', '_')}">
-                    <td style="text-align:left; vertical-align: middle;">${selectedText}</td>
-                    <td class="text-left">
-                        <input type="number" step="0.01" class="form-control form-control-sm" 
-                               placeholder="Fare Amount" name="stsfares[]" required>
-                    </td>
-                    <td class="text-center">
-                        <input type="hidden" name="stsids[]" value="${selectedPair}">
-                        <button type="button" class="btn btn-sm btn-outline-danger px-3 py-2 del-sts-fare">
-                            <i class="fa fa-times pr-0"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
+                    <tr id="${rowId}">
+                        <td style="vertical-align: middle;">
+                            ${selectedText}
+                            <input type="hidden" name="stsids[]" value="${selectedPair}">
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" class="form-control form-control-sm" 
+                                   placeholder="0.00" name="stsfares[]" required>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger del-sts-fare">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
 
-                $('#sts-fare-table').append(newRow);
-                console.log("✅ Row added for:", selectedText);
+                $('#sts-fare-rows').append(newRow);
             });
 
-            // ======================
-            // 3️⃣ Delete Button Click
-            // ======================
+            // Delete Action
             $(document).on('click', '.del-sts-fare', function () {
                 $(this).closest('tr').remove();
             });
 
-            // ======================
-            // 4️⃣ Auto trigger on load (edit mode)
-            // ======================
+            // Auto Trigger on Edit
             if ($('#route_id').val()) {
                 $('#route_id').trigger('change');
             }
-
         });
     </script>
-
-
-@endsection
+@endpush
