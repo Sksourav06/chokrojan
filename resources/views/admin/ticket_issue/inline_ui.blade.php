@@ -485,7 +485,7 @@
     // ===================================================================
     // 1. GLOBAL VARIABLE INITIALIZATION (Loaded from Controller/Blade)
     // ===================================================================
-    // window.MAX_SEAT_LIMIT = @json($settings->counter_max_seat_per_ticket);
+    
     // Core Trip Data
     const TRIP_ID = {{ $trip->id ?? 'null' }};
     const SEAT_FARE = {{ $displayFare ?? 0 }};
