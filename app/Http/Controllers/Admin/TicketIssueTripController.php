@@ -144,7 +144,7 @@ class TicketIssueTripController extends Controller
 
         try {
             $allSettings = SystemSetting::all();
-            $maxSeatLimit = $allSettings->pluck('counter_max_seat_per_ticket')->min();
+            // $maxSeatLimit = $allSettings->pluck('counter_max_seat_per_ticket')->min();
             // 1. Load trip with required relations
             $trip = Schedule::with([
                 'startStation',
@@ -233,7 +233,7 @@ class TicketIssueTripController extends Controller
                 'displayOriginName',
                 'displayDestinationName',
                 'displayFare',
-                'maxSeatLimit',
+                // 'maxSeatLimit',
                 'counters',
                 'user',
             ));
