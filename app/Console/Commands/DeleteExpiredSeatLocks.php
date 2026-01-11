@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\SeatLock; // আপনার মডেলটি ইমপোর্ট করুন
+use App\Models\SeatLock;
 use Carbon\Carbon;
 
 class DeleteExpiredSeatLocks extends Command
@@ -18,18 +18,33 @@ class DeleteExpiredSeatLocks extends Command
      * The console command description.
      * @var string
      */
-    protected $description = 'Deletes seat lock records that have passed their expiration time.';
+    protected $description = 'Continuously deletes expired seat locks every second.';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        // বর্তমান সময়ের চেয়ে পুরনো বা সমানExpires_at এর সমস্ত লক খুঁজুন
-        $deletedCount = SeatLock::where('expires_at', '<=', Carbon::now())
-            ->delete();
+        $this->info("Seat Lock Cleaner Worker Started...");
 
-        $this->info("Successfully deleted {$deletedCount} expired seat locks.");
+        // ==========================================
+        // Supervisor এর জন্য অসীম লুপ (Infinite Loop)
+        // ==========================================
+        while (true) {
+
+            // ১. মেয়াদোত্তীর্ণ লক ডিলিট করা
+            $deletedCount = SeatLock::where('expires_at', '<=', Carbon::now())->delete();
+
+            // যদি কোনো ডাটা ডিলিট হয়, তবে লগে দেখাবে
+            if ($deletedCount > 0) {
+                $this->info("Deleted {$deletedCount} expired locks at " . Carbon::now()->toTimeString());
+            }
+
+            // ২. ১ সেকেন্ড অপেক্ষা করা (যাতে CPU ওভারলোড না হয়)
+            sleep(1);
+        }
+
+        // এই লাইনটি টেকনিক্যালি কখনোই এক্সিকিউট হবে না কারণ লুপটি অসীম
         return 0;
     }
 }
