@@ -185,7 +185,9 @@
     {{-- --------------------------- --}}
     <span id="initial_fare_data" data-fares='@json($stationPrices)'></span>
 
-<script>
+@endsection
+@push('scripts')
+ <script>
 $(document).ready(function () {
     // ---------------------------
     // FETCH EXISTING FARES DATA
@@ -309,4 +311,4 @@ $(document).ready(function () {
 });
 </script>
 
-@endsection
+@endpush
